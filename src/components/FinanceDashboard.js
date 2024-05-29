@@ -1,6 +1,104 @@
 import React, { useState, useRef } from "react";
 import Papa from "papaparse";
 import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
+
+const keywordCategories = {
+  Business: ["google", "Google Ads", "Google Drive"],
+  Coffee: ["coffee", "coff", "libertine", "starbucks", "boba", "cafe", "scout"],
+  Education: ["Barron's", "ITunes", "WSJ", "WSJ/BARRON'S", "polytechnic"],
+  Entertainment: [
+    "games",
+    "itunes",
+    "blizzard",
+    "blizzard entertainment",
+    "NETFLIX",
+    "SPOTIFY",
+    "STEAM GAMES",
+    "DISNEY",
+  ],
+  Fees: ["interest", "INTEREST CHARGED", "FEE_TRANSACTION"],
+  Food: [
+    "Haagen dazs",
+    "Starbucks",
+    "McDonald's",
+    "Dominos",
+    "Chipotle",
+    "CHICK-FIL-A",
+    "Dunkin",
+    "Taco",
+    "TAQUERIA",
+    "In-n-out",
+  ],
+  Garden: ["best buy", "BEST BUY", "Home Depot"],
+  Groceries: [
+    "Whole Foods",
+    "Kroger",
+    "Safeway",
+    "Trader Joe's",
+    "Publix",
+    "Ralph",
+    "Costco",
+  ],
+  Health: ["CVS", "Walgreens"],
+  Shopping: [
+    "Amazon",
+    "Walmart",
+    "WALMART STORE",
+    "Target",
+    "Etsy",
+    "Princess Polly",
+    "Apple Store",
+    "PetSmart",
+    "T-Mobile",
+    "Gym",
+  ],
+  Travel: [
+    "Airbnb",
+    "Shell Service",
+    "AirBNB",
+    "Lyft",
+    "Uber",
+    "hotel",
+    "delta",
+  ],
+  Utilities: ["Electric", "Water", "City of San luis obispo"],
+  News: ["WASHPOST"],
+  Subscription: [
+    "HBO Max",
+    "Zoom.US",
+    "Amazon Prime",
+    "Gym",
+    "Microsoft *Office",
+    "Apple Store",
+    "T-Mobile",
+    "Chegg",
+    "HBO Max",
+    "Medium",
+    "Microsoft *Office",
+  ],
+  Rent: ["Peter"],
+  Venmo: ["Venmo"],
+  Transfer: ["Transfer"],
+  School: ["poly", "polytechnic"],
+};
 
 const FinanceDashboard = () => {
   const [data, setData] = useState([]);
@@ -20,14 +118,31 @@ const FinanceDashboard = () => {
     });
   };
 
+  const categorizeTransaction = (description) => {
+    console.log(description);
+    for (const [category, keywords] of Object.entries(keywordCategories)) {
+      for (const keyword of keywords) {
+        if (description.toLowerCase().includes(keyword.toLowerCase())) {
+          console.log("{description} contains {keyword}");
+          return category;
+        }
+      }
+    }
+    return "Unknown";
+  };
+
   const processData = (data) => {
     const categoryTotals = {};
     const monthlyTotals = {};
 
     data.forEach((transaction) => {
-      const amount = parseFloat(transaction.Amount);
-      const category = transaction.Category;
-      const date = new Date(transaction.Date);
+      const amountString = transaction.Amount
+        ? transaction.Amount.replace(/[^0-9.-]+/g, "")
+        : "0";
+      const amount = parseFloat(amountString);
+      const description = transaction.Description || "";
+      const category = categorizeTransaction(description);
+      const date = new Date(transaction["Posting Date"]);
       const month = date.toLocaleString("default", {
         month: "short",
         year: "numeric",
@@ -74,7 +189,7 @@ const FinanceDashboard = () => {
           </h1>
           <button
             onClick={() => fileInputRef.current.click()}
-            className="mt-10 block text-sm text-gray-500 py-2 px-4 rounded-full border-0 bg-gray-200 text-black hover:bg-gray-300 cursor-pointer"
+            className="block text-sm text-gray-500 py-2 px-4 rounded-full border-0 bg-gray-200 text-black hover:bg-gray-300 cursor-pointer"
           >
             Choose File
           </button>
@@ -87,12 +202,12 @@ const FinanceDashboard = () => {
           />
         </div>
         {data.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-xl mb-4 text-center">Spending by Category</h2>
-            <div className="w-full mx-auto mb-8">
+          <div className="mt-56">
+            <h2 className="text-xl mb-10 text-center">Spending by Category</h2>
+            <div className="w-full mx-auto mb-20">
               <Pie data={categoryData} />
             </div>
-            <h2 className="text-xl mb-4 text-center">Monthly Spending</h2>
+            <h2 className="text-xl mb-10 text-center">Monthly Spending</h2>
             <div className="w-full mx-auto">
               <Bar data={monthlyData} />
             </div>
