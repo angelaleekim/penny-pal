@@ -1,4 +1,4 @@
-# PennyPal
+# penny-pal
 
 A simple React app that takes in your Chase bank statement CSV file and displays charts and statistics on your spending.
 
