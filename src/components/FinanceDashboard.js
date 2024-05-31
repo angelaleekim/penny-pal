@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import Papa from "papaparse";
 import { Bar, Pie } from "react-chartjs-2";
+import "./HeroSection.css";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -21,7 +22,6 @@ ChartJS.register(
 );
 
 const keywordCategories = {
-  Business: ["google", "Google Ads", "Google Drive"],
   Coffee: ["coffee", "coff", "libertine", "starbucks", "boba", "cafe", "scout"],
   Education: ["Barron's", "ITunes", "WSJ", "WSJ/BARRON'S", "polytechnic"],
   Entertainment: [
@@ -93,6 +93,9 @@ const keywordCategories = {
     "HBO Max",
     "Medium",
     "Microsoft *Office",
+    "google",
+    "Google Ads",
+    "Google Drive",
   ],
   Rent: ["Peter"],
   Venmo: ["Venmo"],
@@ -119,11 +122,9 @@ const FinanceDashboard = () => {
   };
 
   const categorizeTransaction = (description) => {
-    console.log(description);
     for (const [category, keywords] of Object.entries(keywordCategories)) {
       for (const keyword of keywords) {
         if (description.toLowerCase().includes(keyword.toLowerCase())) {
-          console.log("{description} contains {keyword}");
           return category;
         }
       }
@@ -149,13 +150,17 @@ const FinanceDashboard = () => {
       });
 
       if (category) {
-        categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+        categoryTotals[category] =
+          (categoryTotals[category] || 0) + Math.abs(amount);
       }
 
-      if (month) {
-        monthlyTotals[month] = (monthlyTotals[month] || 0) + amount;
+      if (month && category !== "Transfer") {
+        monthlyTotals[month] = (monthlyTotals[month] || 0) + Math.abs(amount);
       }
     });
+
+    // Remove the "Transfer" category from categoryTotals
+    delete categoryTotals["Transfer"];
 
     setCategoryData({
       labels: Object.keys(categoryTotals),
@@ -184,12 +189,14 @@ const FinanceDashboard = () => {
     <div className="flex items-center justify-center w-screen h-screen bg-white text-black">
       <div className="w-full max-w-2xl p-4">
         <div className="flex flex-col items-start mb-6">
-          <h1 className="text-3xl font-semibold mb-4">
-            PennyPal Finance Dashboard
-          </h1>
+          <h1 className="text-2xl font-semibold mb-4">Upload Your Statement</h1>
+          <p className="text-md mb-10">
+            Upload your Chase bank statement CSV file and gain valuable insights
+            with our intuitive charts.
+          </p>
           <button
             onClick={() => fileInputRef.current.click()}
-            className="block text-sm text-gray-500 py-2 px-4 rounded-full border-0 bg-gray-200 text-black hover:bg-gray-300 cursor-pointer"
+            className="inline-block text-md py-2 px-4 rounded-full my-button"
           >
             Choose File
           </button>
@@ -202,13 +209,17 @@ const FinanceDashboard = () => {
           />
         </div>
         {data.length > 0 && (
-          <div className="mt-56">
-            <h2 className="text-xl mb-10 text-center">Spending by Category</h2>
+          <div className="mt-96">
+            <h2 className="text-3xl mt-96 mb-10 text-left font-semibold blue-gradient-text">
+              Spending by Category
+            </h2>
             <div className="w-full mx-auto mb-20">
               <Pie data={categoryData} />
             </div>
-            <h2 className="text-xl mb-10 text-center">Monthly Spending</h2>
-            <div className="w-full mx-auto">
+            <h2 className="text-3xl mb-10 text-left font-semibold purple-gradient-text">
+              Monthly Spending
+            </h2>
+            <div className="w-full mb-36">
               <Bar data={monthlyData} />
             </div>
           </div>
