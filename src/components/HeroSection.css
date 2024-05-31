@@ -1,0 +1,64 @@
+/* HeroSection.css */
+@keyframes jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.jumping {
+  display: inline-block;
+  animation: jump 1s infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #7634a6, #16c2dd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.purple-gradient-text {
+  background: linear-gradient(90deg, #be29d2, #360559);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.blue-gradient-text {
+  background: linear-gradient(90deg, #197596, #16c2dd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.my-button {
+  background-color: #00b8ea;
+  color: white;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.my-button:hover {
+  background-color: #01a2ce;
+}
